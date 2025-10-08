@@ -2,6 +2,6 @@
 
 #### Grokking Concurrency- Kirill Bobrov
 
-### Wednesday, October 8, 2025
+### 2025-10-08
 
-- `chapter-one.md`: This file contains notes on the first chapter of "Grokking Concurrency", covering Moore's Law.
+- `chapter-one.md`: This file contains notes on the first chapter of "Grokking Concurrency", covering Moore's Law and the octopus orchestra analogy.
