@@ -1,4 +1,4 @@
-### Chapter One
+### 📖 Chapter One
 
 #### The octopus orchestra
 
@@ -21,3 +21,4 @@ Now, if the coffee shop adds another barista and another coffee machine (an exam
 In this analogy:
 - **Reducing latency** would mean making a single coffee faster (e.g., a more efficient coffee machine).
 - **Increasing throughput** means serving more customers in the same amount of time (e.g., adding more baristas and machines).
+

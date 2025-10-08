@@ -1,17 +1,4 @@
-<!-- Imported from: Readme.md -->
-### Book
-
-#### Grokking Concurrency- Kirill Bobrov
-
-### Chapters
-
-This folder contains all the files with notes about the book's chapters.
-
-#### 📖 Chapter I
-
-- Covering Moore's Law, the octopus orchestra analogy, and latency vs throughput.
-
-### Changelog
-
-- **2025-10-08**: Initialization of the chapter I.
-<!-- End of import from: Readme.md -->
+- For every file in folder chapters, include the section for the chapter if is not already defined in the file and add brief notes under that
+chapter
+- Maintaing in the bottom the changelog, will should be updated with the day and task executed 
+- Add some emoji for every subtitle chapters
