@@ -4,10 +4,12 @@
 
 ### Chapters
 
-#### Chapter one
+This folder contains all the files with notes about the book's chapters.
 
-- `chapter-one.md`: This file contains notes on the first chapter of "Grokking Concurrency", covering Moore's Law, the octopus orchestra analogy, and an example of latency vs throughput using a coffee shop analogy.
+#### Chapter I
+
+- Notes on Chapter I, covering Moore's Law, the octopus orchestra analogy, and latency vs throughput.
 
 ### Changelog
 
-- **2025-10-08**: Initialization of the chapter one.
+- **2025-10-08**: Initialization of the chapter I.
