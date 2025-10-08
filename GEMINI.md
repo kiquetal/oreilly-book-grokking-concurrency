@@ -1,0 +1,2 @@
+-Update the file @Readme.md with a brief description of every files created in the folder chapters/
+-Include some section defined by date(date should be in iso-8601)
