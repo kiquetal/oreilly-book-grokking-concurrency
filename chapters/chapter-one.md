@@ -22,6 +22,12 @@ In this analogy:
 - **Reducing latency** would mean making a single coffee faster (e.g., a more efficient coffee machine).
 - **Increasing throughput** means serving more customers in the same amount of time (e.g., adding more baristas and machines).
 
-Concurrency can reduce latency 
-It can hide latency 
-It can increase throughput = make the system able to do more work
+Concurrency can reduce latency.
+It can hide latency.
+It can increase throughput = make the system able to do more work.
+
+#### Solving complex and large problems
+
+Complexity can come from the size of the problem or how hard is to understand a given piece of the system we develop
+
+
