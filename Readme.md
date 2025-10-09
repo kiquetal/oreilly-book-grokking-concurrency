@@ -12,10 +12,11 @@ This folder contains all the files with notes about the book's chapters.
 
 #### 📖 [Chapter II](./chapters/chapter-two.md)
 
-- Notes on Chapter II, not yet available.
+- Notes on Chapter II, covering Serial and parallel execution.
 
 ### Changelog
 
+- **2025-10-09**: Update Readme.md.
 - **2025-10-09**: Executed instructions from GEMINI.md.
 - **2025-10-08**: Initialization of the chapter I.
 - **2025-10-08**: Update Readme.md.
