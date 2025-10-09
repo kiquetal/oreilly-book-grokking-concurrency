@@ -8,4 +8,5 @@ One after another is the serially mode.
 
 Concurrency: is based on the idea that are independent computations that can be executed in any order.
 
-Parallelal execution:
+
+Parallelal execution: Increasing the throughput in the same time
