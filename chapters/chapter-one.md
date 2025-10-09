@@ -29,5 +29,7 @@ It can increase throughput = make the system able to do more work.
 #### Solving complex and large problems
 
 Complexity can come from the size of the problem or how hard is to understand a given piece of the system we develop
+Scalability: characteristic of the system that can improve perfomance just adding more resources.
+
 
 
