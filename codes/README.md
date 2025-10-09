@@ -5,7 +5,7 @@ This directory contains code examples for the "Grokking Concurrency" book. Follo
 ## Setting Up a Python Virtual Environment
 
 ### Prerequisites
-- Python 3.8 or higher
+- Python 3.10.5
 - pip (Python package installer)
 
 ### Steps to Create and Activate a Virtual Environment
