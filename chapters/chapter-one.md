@@ -31,5 +31,9 @@ It can increase throughput = make the system able to do more work.
 Complexity can come from the size of the problem or how hard is to understand a given piece of the system we develop
 Scalability: characteristic of the system that can improve perfomance just adding more resources.
 
+####  Layers of concurrency
 
+- Conceptual layers: the code or the music
+- Runtime layers: the musicans
+- Low level layer: hardware the specific instrument
 
