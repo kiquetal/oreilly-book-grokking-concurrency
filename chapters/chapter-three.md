@@ -1,4 +1,6 @@
-#### Chapter III
+### 📖 Chapter III
+
+- Notes on Chapter III, covering how computer works.
 
 ##### How computer works
 

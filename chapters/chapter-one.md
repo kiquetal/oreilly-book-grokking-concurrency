@@ -1,5 +1,7 @@
 ### 📖 Chapter I
 
+Notes on Chapter I, covering Moore's Law, the octopus orchestra analogy, and latency vs throughput.
+
 #### The octopus orchestra
 
 Moore's Law: New process appear 2 years after the predecessors

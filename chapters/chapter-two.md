@@ -1,5 +1,6 @@
 ### 📖 Chapter II
 
+- Notes on Chapter II, covering Serial and parallel execution.
 
 #### Serial and parallel execution
 

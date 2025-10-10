@@ -14,6 +14,10 @@ This folder contains all the files with notes about the book's chapters.
 
 - Notes on Chapter II, covering Serial and parallel execution.
 
+#### 📖 [Chapter III](./chapters/chapter-three.md)
+
+- Notes on Chapter III, covering how computer works.
+
 ### Changelog
 
 - **2025-10-09**: Update Readme.md.
