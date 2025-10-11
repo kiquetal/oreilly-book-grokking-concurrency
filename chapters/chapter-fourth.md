@@ -1,4 +1,6 @@
-#### Chapter IV
+### 📖 Chapter IV
+
+- Notes on Chapter IV, covering building blocks of concurrency.
 
 ##### Building blocks of concurrency
 
@@ -8,5 +10,6 @@ Process: It is a running program
 
 Process internals: a identifier is called process ID (PID)
 Execution context: Encapsulates a lot of things.
+Process can create their own processes- using fork or spawn()
 
 
