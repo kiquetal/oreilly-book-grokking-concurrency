@@ -6,3 +6,7 @@ Concurrent programming is a set of abstactins that allow the developer to struct
 
 Process: It is a running program
 
+Process internals: a identifier is called process ID (PID)
+Execution context: Encapsulates a lot of things.
+
+
