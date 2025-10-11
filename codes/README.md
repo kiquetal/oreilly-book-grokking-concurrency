@@ -373,53 +373,154 @@ Both threads and processes are used for concurrent execution in Python, but they
 - When maximum parallelism is needed
 - Long-running background tasks
 
-#### Choosing Between Threads and Processes
+### Data Sharing: Threads vs Processes
 
-Consider these factors when deciding:
+While the comparison above shows that threads have an advantage with "Shared Memory", this simplicity comes with important trade-offs:
 
-1. **Task Type**:
-   - **I/O-bound tasks** (waiting for external resources): Use threads
-   - **CPU-bound tasks** (heavy computation): Use processes
+#### Thread Data Sharing
 
-2. **Data Sharing Requirements**:
-   - **Frequent data sharing**: Threads may be more efficient
-   - **Independent operations**: Processes provide better isolation
+**Easier Access, Harder Synchronization:**
+- **Direct Access**: Threads can directly access and modify variables in the shared memory space
+- **No Serialization Required**: No need to pickle/unpickle data as with processes
+- **Lower Overhead**: Minimal memory and performance overhead when sharing data
 
-3. **Resource Constraints**:
-   - **Limited memory**: Threads have less overhead
-   - **Maximum performance**: Processes utilize multiple cores better
+**However, Thread Data Sharing Challenges:**
+- **Race Conditions**: Multiple threads modifying the same data can lead to unexpected results
+- **Requires Synchronization Mechanisms**: Must use locks, semaphores, or other synchronization tools
+- **Deadlock Risk**: Improper lock management can lead to deadlocks where threads wait indefinitely
+- **Subtle Bugs**: Thread synchronization bugs can be intermittent and difficult to reproduce
 
-4. **Error Handling**:
-   - **Need isolation**: Processes prevent errors from spreading
-   - **Simplified coordination**: Threads share state more easily
-
-#### Example: When to Use Each Approach
-
-**Use Threads for:**
+**Example of Thread Data Sharing with Synchronization:**
 ```python
-# Web scraping - I/O bound
-def scrape_url(url):
-    # Network operations, waiting for responses
-    response = requests.get(url)
-    return response.text
+import threading
 
-# Create multiple threads for different URLs
-for url in urls:
-    thread = Thread(target=scrape_url, args=(url,))
+# Shared data
+counter = 0
+counter_lock = threading.Lock()
+
+def increment_counter():
+    global counter
+    for _ in range(100000):
+        # Need to acquire a lock before modifying shared data
+        with counter_lock:
+            counter += 1
+
+# Create threads that share data
+threads = []
+for _ in range(5):
+    thread = threading.Thread(target=increment_counter)
+    threads.append(thread)
     thread.start()
+
+# Wait for all threads to complete
+for thread in threads:
+    thread.join()
+
+print(f"Final counter value: {counter}")  # Will be 500000 with proper synchronization
 ```
 
-**Use Processes for:**
-```python
-# Image processing - CPU bound
-def process_image(image_path):
-    # Heavy computational work
-    image = Image.open(image_path)
-    # Apply filters and transformations
-    return processed_image
+#### Process Data Sharing
 
-# Create multiple processes for different images
-for img_path in image_paths:
-    process = Process(target=process_image, args=(img_path,))
-    process.start()
-```
+**Explicit and Safer, but More Complex:**
+- **Isolated by Default**: Processes have separate memory spaces, preventing accidental interference
+- **Explicit Sharing Mechanisms**: Requires specific tools to share data
+- **More Overhead**: Higher memory usage and serialization costs
+
+**Process Data Sharing Methods:**
+
+1. **Using `multiprocessing.Value` and `multiprocessing.Array`**:
+   ```python
+   from multiprocessing import Process, Value, Array
+   
+   def update_shared_data(counter, data_array):
+       # Shared memory can be modified directly
+       counter.value += 1
+       for i in range(len(data_array)):
+           data_array[i] *= 2
+   
+   if __name__ == "__main__":
+       # Create shared memory objects
+       shared_counter = Value('i', 0)
+       shared_array = Array('d', [1.0, 2.0, 3.0, 4.0])
+       
+       processes = []
+       for _ in range(5):
+           p = Process(target=update_shared_data, args=(shared_counter, shared_array))
+           processes.append(p)
+           p.start()
+       
+       for p in processes:
+           p.join()
+           
+       print(f"Final counter: {shared_counter.value}")
+       print(f"Final array: {list(shared_array)}")
+   ```
+
+2. **Using `multiprocessing.Manager`** (more flexible but slower):
+   ```python
+   from multiprocessing import Process, Manager
+   
+   def update_dict(shared_dict, shared_list):
+       shared_dict['count'] += 1
+       shared_list.append(f"Process-{shared_dict['count']}")
+   
+   if __name__ == "__main__":
+       with Manager() as manager:
+           # Create shared objects that can be used between processes
+           shared_dict = manager.dict({'count': 0})
+           shared_list = manager.list()
+           
+           processes = []
+           for _ in range(5):
+               p = Process(target=update_dict, args=(shared_dict, shared_list))
+               processes.append(p)
+               p.start()
+           
+           for p in processes:
+               p.join()
+               
+           print(f"Final dict: {dict(shared_dict)}")
+           print(f"Final list: {list(shared_list)}")
+   ```
+
+3. **Using Pipes or Queues** (for passing data between processes):
+   ```python
+   from multiprocessing import Process, Queue
+   
+   def producer(queue):
+       for i in range(5):
+           queue.put(f"Item {i}")
+   
+   def consumer(queue):
+       while not queue.empty():
+           item = queue.get()
+           print(f"Consumed: {item}")
+   
+   if __name__ == "__main__":
+       # Create a queue to share data between processes
+       q = Queue()
+       
+       # Start the producer
+       p1 = Process(target=producer, args=(q,))
+       p1.start()
+       p1.join()
+       
+       # Start the consumer
+       p2 = Process(target=consumer, args=(q,))
+       p2.start()
+       p2.join()
+   ```
+
+#### When to Choose Which Approach
+
+**Choose Thread-based Sharing When:**
+- You need frequent, low-overhead data sharing
+- Memory efficiency is critical
+- The shared data structure is complex and would be costly to serialize
+- You can carefully manage synchronization to avoid race conditions
+
+**Choose Process-based Sharing When:**
+- You need true parallelism for CPU-bound tasks
+- Isolation and stability are more important than sharing efficiency
+- You want to avoid complex thread synchronization issues
+- The shared data is simple or infrequently changed
