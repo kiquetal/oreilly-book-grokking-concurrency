@@ -13,3 +13,6 @@ Execution context: Encapsulates a lot of things.
 Process can create their own processes- using fork or spawn()
 
 
+A process is a container of resources(address space,files, connections)
+A thread is the dynamic part.
+a process can be seen as a unit of resources, while a thread can be viewed as a unito of execution.
