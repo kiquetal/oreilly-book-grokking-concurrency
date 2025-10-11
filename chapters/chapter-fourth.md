@@ -18,3 +18,7 @@ A thread is the dynamic part.
 a process can be seen as a unit of resources, while a thread can be viewed as a unito of execution.
 
 ![../images/chapter-fourth.png](../images/chapter-fourth.png)
+
+You can create thread inside the process, here the thread is not sharing data
+
+![../images/chapter-fourth-two.png](../images/chapter-fourth-two.png)
