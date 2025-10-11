@@ -75,6 +75,8 @@ python example_file.py
 - [Chapter 4: Child Processes and Multiprocessing](#chapter-4-child-processes-and-multiprocessing)
   - [Understanding the Basic Child Process Example](#understanding-the-basic-child-process-example)
   - [Extending the Example: Sending Parameters to Child Processes](#extending-the-example-sending-parameters-to-child-processes)
+  - [Multithreading Example](#multithreading-example)
+  - [Comparing Threads and Processes](#comparing-threads-and-processes)
 
 ## Chapter 4: Child Processes and Multiprocessing
 
@@ -259,3 +261,165 @@ if __name__ == "__main__":
 3. **Performance Considerations**: Passing large amounts of data can be inefficient due to serialization overhead. For large data, consider using shared memory.
 
 4. **Process Synchronization**: When data is shared between processes, proper synchronization is required using locks, semaphores, or other mechanisms from the `multiprocessing` module.
+
+### Multithreading Example
+
+The `multithreading.py` file demonstrates how to create and manage threads in Python using the `threading` module. Here's a breakdown of the code:
+
+```python
+import os
+import time
+import threading
+from threading import Thread
+
+def cpu_water(id: int) -> None:
+    name= threading.current_thread().name
+    print(f"Thread {name} with ID {id} starting.")
+    time.sleep(3)
+
+def display_threads() -> None:
+    print("-" * 40)
+    print(f"Current process ID: {os.getpid()}")
+    print(f"Active threads count: {threading.active_count()}")
+    print("Thread details:")
+    for thread in threading.enumerate():
+        print(thread)
+
+def main(num_threads: int) -> None:
+    display_threads()
+    print(f"[main]Starting {num_threads} CPU water threads.")
+    for i in range(num_threads):
+        thread = Thread(target=cpu_water, args=(i,))
+        thread.start()
+    display_threads()
+
+if __name__ == "__main__":
+    main(5)
+```
+
+This code:
+1. Imports necessary modules: `os`, `time`, `threading` and `Thread` from `threading`
+2. Defines a `cpu_water()` function that simulates CPU work (using sleep for demonstration purposes)
+3. Defines a `display_threads()` function that shows information about all running threads
+4. Defines a `main()` function that creates multiple threads
+5. When run as a script, creates 5 threads
+
+#### Key Points About Passing Parameters to Threads
+
+Unlike processes, threads share the same memory space. However, passing parameters to thread functions works similarly:
+
+1. **Defining a Target Function with Parameters**: 
+   ```python
+   def cpu_water(id: int) -> None:
+       name = threading.current_thread().name
+       print(f"Thread {name} with ID {id} starting.")
+       time.sleep(3)
+   ```
+
+2. **Passing Arguments Using `args` Parameter**:
+   ```python
+   thread = Thread(target=cpu_water, args=(i,))
+   ```
+
+3. **Pass Keyword Arguments**: For named parameters, use the `kwargs` parameter:
+   ```python
+   thread = Thread(target=some_function, kwargs={'name': thread_name, 'number': thread_number})
+   ```
+
+4. **Accessing Thread Information**: You can get information about the current thread:
+   ```python
+   name = threading.current_thread().name
+   ```
+
+### Comparing Threads and Processes
+
+Both threads and processes are used for concurrent execution in Python, but they have key differences that make them suitable for different scenarios:
+
+#### Threads (threading module)
+
+**Advantages:**
+- **Lightweight**: Threads require fewer resources to create than processes
+- **Shared Memory**: All threads within a process share the same memory space, making data sharing easier
+- **Fast Creation**: Threads are faster to create than processes
+- **Communication**: Thread communication is simpler as they share memory
+
+**Limitations:**
+- **Global Interpreter Lock (GIL)**: Python's GIL prevents multiple threads from executing Python bytecode simultaneously, limiting CPU-bound parallelism
+- **Harder to Debug**: Shared memory can lead to race conditions and deadlocks
+- **Limited Isolation**: Crashes in one thread can affect other threads
+
+**Best for:**
+- I/O-bound tasks (network operations, file operations)
+- Tasks that require frequent communication
+- User interfaces
+- When memory usage is a concern
+
+#### Processes (multiprocessing module)
+
+**Advantages:**
+- **True Parallelism**: Multiple processes can execute Python code simultaneously, bypassing the GIL
+- **Isolation**: Processes have separate memory spaces, preventing one process from affecting others
+- **Stability**: A crash in one process doesn't affect other processes
+- **Scalability**: Processes can use multiple CPU cores effectively
+
+**Limitations:**
+- **Resource Intensive**: Processes require more memory and take longer to create
+- **Complex Communication**: Inter-process communication is more complex and requires serialization
+- **Overhead**: Data sharing between processes involves copying or special shared memory objects
+
+**Best for:**
+- CPU-bound tasks
+- Tasks requiring isolation and fault tolerance
+- When maximum parallelism is needed
+- Long-running background tasks
+
+#### Choosing Between Threads and Processes
+
+Consider these factors when deciding:
+
+1. **Task Type**:
+   - **I/O-bound tasks** (waiting for external resources): Use threads
+   - **CPU-bound tasks** (heavy computation): Use processes
+
+2. **Data Sharing Requirements**:
+   - **Frequent data sharing**: Threads may be more efficient
+   - **Independent operations**: Processes provide better isolation
+
+3. **Resource Constraints**:
+   - **Limited memory**: Threads have less overhead
+   - **Maximum performance**: Processes utilize multiple cores better
+
+4. **Error Handling**:
+   - **Need isolation**: Processes prevent errors from spreading
+   - **Simplified coordination**: Threads share state more easily
+
+#### Example: When to Use Each Approach
+
+**Use Threads for:**
+```python
+# Web scraping - I/O bound
+def scrape_url(url):
+    # Network operations, waiting for responses
+    response = requests.get(url)
+    return response.text
+
+# Create multiple threads for different URLs
+for url in urls:
+    thread = Thread(target=scrape_url, args=(url,))
+    thread.start()
+```
+
+**Use Processes for:**
+```python
+# Image processing - CPU bound
+def process_image(image_path):
+    # Heavy computational work
+    image = Image.open(image_path)
+    # Apply filters and transformations
+    return processed_image
+
+# Create multiple processes for different images
+for img_path in image_paths:
+    process = Process(target=process_image, args=(img_path,))
+    process.start()
+```
