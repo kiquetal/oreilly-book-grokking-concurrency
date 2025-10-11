@@ -15,13 +15,13 @@ This directory contains code examples for the "Grokking Concurrency" book. Follo
 # Navigate to the codes directory
 cd /path/to/codes
 
-# Create a virtual environment with Python 3.10.5
-python3.10 -m venv venv
+# Create a virtual environment
+python3 -m venv venv
 
 # Activate the virtual environment
 source venv/bin/activate
 
-# Verify the environment is active (should show Python 3.10.5)
+# Verify the environment is active (should show the Python version)
 python --version
 
 # Install required dependencies
@@ -33,13 +33,13 @@ pip install -r requirements.txt  # (if a requirements.txt file exists)
 # Navigate to the codes directory
 cd \path\to\codes
 
-# Create a virtual environment with Python 3.10.5
-py -3.10 -m venv venv
+# Create a virtual environment
+python -m venv venv
 
 # Activate the virtual environment
 venv\Scripts\activate
 
-# Verify the environment is active (should show Python 3.10.5)
+# Verify the environment is active (should show the Python version)
 python --version
 
 # Install required dependencies
@@ -70,34 +70,4 @@ Example:
 python example_file.py
 ```
 
-## Chapter Explanations
 
-### Chapter 4: Child Processes and Multiprocessing
-
-The examples in this chapter demonstrate how to work with child processes in Python using the `multiprocessing` module.
-
-#### Passing Variables to Child Processes
-
-In `child_processes.py`, we demonstrate how to pass variables from the parent process to child processes:
-
-```python
-# Create a child process and pass variables to it
-p = Process(target=run_child, args=(message, number))
-p.start()
-```
-
-The `args` parameter of the `Process` constructor takes a tuple of arguments to be passed to the target function. These arguments are serialized and sent to the child process.
-
-You can pass any serializable Python object (numbers, strings, lists, dictionaries, etc.) to a child process:
-
-```python
-# Example of passing different types of data
-data = {
-    'name': 'example',
-    'values': [1, 2, 3]
-}
-p = Process(target=some_function, args=(data, 42, "hello"))
-p.start()
-```
-
-Note that each child process gets its own copy of the variables, so changes made in a child process won't affect the variables in the parent process or other child processes.
