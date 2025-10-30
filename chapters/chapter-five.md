@@ -22,5 +22,12 @@ The `continue` statement solves this by forcing the `Consumer` to wait. If the `
 
 ##### Message-passing IPC
 
+In message-passing IPC, each task is identified by a unique name, and 
+tasks interact by sending and receving mesages to and from named tasks.
+The OS is responsible for delivering messages to the correct task.
 
+Pipe: simplest from of IPC. A pipe is a unidirectional communication channel that can be used for interprocess communication. Data written to the write end of the pipe can be read from the read end of the pipe. If you need bidirectional communication, you can create two pipes.
+
+Unnamed pipe: can only be used by related tasks(ex child-parent processes). Created using the pipe() system call. Unnamed pipes dissapear after the task finish using them.
+ Pipe operatios are similar to file operations
 
