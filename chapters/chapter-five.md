@@ -31,3 +31,5 @@ Pipe: simplest from of IPC. A pipe is a unidirectional communication channel tha
 Unnamed pipe: can only be used by related tasks(ex child-parent processes). Created using the pipe() system call. Unnamed pipes dissapear after the task finish using them.
  Pipe operatios are similar to file operations
 
+Reading from a pipe is a blocking operation. If a process attempts to read from an empty pipe, it will pause until data becomes available. In the provided `pipes.py` example, the `Reader` thread calls `self.conn.recv()`, which blocks execution until the `Writer` thread sends data using `self.conn.send()`.
+

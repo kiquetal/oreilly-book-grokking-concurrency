@@ -9,7 +9,7 @@ class Writer(Thread):
         self.name = "Writer"
 
     def run(self) -> None:
-        print(f"{current_thread().name}: Writing data to pipe")
+        print(f"{current_thread().name}: Sending rubber duck...")
         self.conn.send("Rubber duck")
 
 
@@ -20,16 +20,16 @@ class Reader(Thread):
         self.name = "Reader"
 
     def run(self) -> None:
-        print(f"{current_thread().name}: Reading data from pipe")
+        print(f"{current_thread().name}: Reading...")
         data = self.conn.recv()
-        print(f"{current_thread().name}: Read data: {data}")
+        print(f"{current_thread().name}: Received: {data}")
 
 def main() -> None:
     read_conn, write_conn = Pipe()
     reader = Reader(read_conn)
     writer = Writer(write_conn)
 
-    threads = [reader, writer]
+    threads = [writer,reader]
 
     for thread in threads:
         thread.start()
