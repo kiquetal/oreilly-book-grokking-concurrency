@@ -18,3 +18,9 @@ A race condition occurs when the timing of events causes unexpected behavior. In
 The `Consumer` could read from a memory location before the `Producer` has had a chance to write to it. Without proper handling, the `Consumer` would read the initial value (`-1`) and incorrectly proceed as if it were valid data.
 
 The `continue` statement solves this by forcing the `Consumer` to wait. If the `Consumer` reads a `-1`, the `continue` statement skips the rest of the loop (including the part that prints the value) and starts the loop over. This ensures the `Consumer` only proceeds when it has read valid data from the `Producer`.
+
+
+##### Message-passing IPC
+
+
+
