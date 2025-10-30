@@ -22,10 +22,16 @@ This folder contains all the files with notes about the book's chapters.
 #### 📖 [Chapter IV](./chapters/chapter-fourth.md)
 
 - Notes on Chapter IV, covering building blocks of concurrency.
+
+#### 📖 [Chapter V](./chapters/chapter-five.md)
+
+- Notes on Chapter V, covering types of communication.
 <!-- End of import from: Readme.md -->
 
 ### Changelog
 
+- **2025-10-30**: Add explanation of the race condition in chapter five.
+- **2025-10-30**: Executed instructions from GEMINI.md.
 - **2025-10-11**: Executed instructions from GEMINI.md.
 - **2025-10-09**: Update Readme.md.
 - **2025-10-09**: Executed instructions from GEMINI.md.

@@ -1,12 +1,13 @@
+<!-- Imported from: Readme.md -->
 ### 📖 Chapter I
 
 Notes on Chapter I, covering Moore's Law, the octopus orchestra analogy, and latency vs throughput.
 
-#### The octopus orchestra
+#### 🐙 The octopus orchestra
 
 Moore's Law: New process appear 2 years after the predecessors
 
-##### Latency vs Throughput
+##### 🏃 Latency vs Throughput
 Latency is how much time a task is needed to complete
 Throughput is how much work can be done in X
 

@@ -1,8 +1,9 @@
+<!-- Imported from: Readme.md -->
 ### 📖 Chapter III
 
 - Notes on Chapter III, covering how computer works.
 
-##### How computer works
+##### 🤔 How computer works
 
 CPU= CU + ALU
 Cache= temporary memory on the CPU. 

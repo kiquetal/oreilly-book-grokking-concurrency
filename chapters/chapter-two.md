@@ -1,8 +1,9 @@
+<!-- Imported from: Readme.md -->
 ### 📖 Chapter II
 
 - Notes on Chapter II, covering Serial and parallel execution.
 
-#### Serial and parallel execution
+#### 🏃 Serial and parallel execution
 
 Serial execution: Following a order and not advance until the precedding step is completed.
 One after another is the serially mode.

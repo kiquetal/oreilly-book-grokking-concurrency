@@ -11,7 +11,7 @@ class Producer(Thread):
         global shared_memory
         for i in range(SIZE):
             print(f"{current_thread().name}: Writing {int(i)}")
-            shared_memory[i - 1] = i
+            shared_memory[i-1] = i
 
 class Consumer(Thread):
     def run(self) -> None:
@@ -24,6 +24,7 @@ class Consumer(Thread):
                     print(f"{current_thread().name}: Data not avaialable\n"
                           f"sleeping for 0.5 seconds")
                     time.sleep(1)
+                    continue
                 print(f"{current_thread().name}: Reading {line}")
                 break
 
