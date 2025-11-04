@@ -108,3 +108,51 @@ This works because:
    - Both sockets are properly closed
 
 The implementation uses a sleep call (`time.sleep(1)`) to ensure the receiver is ready before the sender starts, which is a simple but effective way to handle initialization ordering in this example.
+
+###### Understanding Connection Termination
+
+The key to understanding how the receiver knows there's no more data lies in this part of the code:
+
+```python
+while True:
+    data = conn.recv(BUFFER_SIZE)
+    if not data:
+        break
+    message = data.decode()
+```
+
+Here's how the termination process works:
+
+1. Connection Closure Process:
+   - When the sender finishes sending all messages, it calls `client.close()`
+   - This initiates a proper TCP connection termination (FIN packet)
+   - The operating system handles the TCP connection teardown
+
+2. Receiver Detection:
+   - `conn.recv(BUFFER_SIZE)` is a blocking call that:
+     - Returns data when messages arrive
+     - Returns an empty bytes object (b'') when the sender closes the connection properly
+   - `if not data:` catches this empty return, signaling that:
+     - The sender has closed their end of the connection
+     - No more data will be coming
+     - It's safe to break the loop
+
+3. Sequence of Events:
+   ```python
+   # Sender side
+   for msg in messages:
+       client.sendall(str.encode(msg))
+       time.sleep(1)
+   client.close()  # This triggers the termination
+
+   # Receiver side
+   data = conn.recv(BUFFER_SIZE)  # Will return empty after sender closes
+   if not data:  # This condition becomes True
+       break     # Loop exits cleanly
+   ```
+
+This is why the code doesn't need explicit message counting or a special "end" message - it relies on the TCP protocol's built-in connection termination handling. The receiver will automatically know there's no more data when the sender closes their socket.
+
+#### Thread Pool Patterns
+
+Reusing threads with a thread pool eliminates the overhead associated with creating new threads and protects against the unexpected failure of the taks, such as an unhandled exception, from terminating the entire program.
