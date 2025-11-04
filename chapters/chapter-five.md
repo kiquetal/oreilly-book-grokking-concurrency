@@ -39,6 +39,10 @@ which means that the first data written to the pipe is the first data read from 
 
 ##### Message Queues
 
+As we've seen, messages queues are used to implement loosely coupled
+systems. They are used everywhere.In OSS to schedule processes and in
+routers as buffers to store packet before they are processed.
+
 
 
 Reading from a pipe is a blocking operation. If a process attempts to read from an empty pipe, it will pause until data becomes available. In the provided `pipes.py` example, the `Reader` thread calls `self.conn.recv()`, which blocks execution until the `Writer` thread sends data using `self.conn.send()`.
