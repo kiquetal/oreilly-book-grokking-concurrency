@@ -47,3 +47,64 @@ routers as buffers to store packet before they are processed.
 
 Reading from a pipe is a blocking operation. If a process attempts to read from an empty pipe, it will pause until data becomes available. In the provided `pipes.py` example, the `Reader` thread calls `self.conn.recv()`, which blocks execution until the `Writer` thread sends data using `self.conn.send()`.
 
+##### Unix Domain Sockets - Stream Communication
+
+The implementation in `sockets.py` demonstrates interprocess communication using Unix Domain Sockets (UDS) with stream sockets (SOCK_STREAM). This provides a reliable, connection-oriented communication channel between processes on the same machine.
+
+###### Socket Implementation Details
+
+1. Sender Socket (Client):
+```python
+client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+client.connect(SOCKET_FILE)
+```
+- Uses `AF_UNIX` for local inter-process communication
+- Uses `SOCK_STREAM` for reliable, ordered data delivery
+- Connects to the server socket using `connect()`
+- Uses `sendall()` to ensure complete message transmission
+
+2. Receiver Socket (Server):
+```python
+server = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+server.bind(SOCKET_FILE)
+server.listen()
+conn, addr = server.accept()
+```
+- Creates a stream socket bound to a filesystem path
+- Calls `listen()` to accept incoming connections
+- Uses `accept()` to create a new socket for the connection
+- Uses `recv()` to receive data from the client
+
+###### Why This Works:
+
+1. Connection Establishment:
+   - The server starts first and calls `listen()`
+   - The client connects using `connect()`
+   - `accept()` creates a new socket specifically for this connection
+
+2. Reliable Communication:
+   - SOCK_STREAM provides:
+     - Guaranteed delivery
+     - In-order message arrival
+     - Automatic message boundaries
+     - Built-in error checking
+
+3. The While Loop Structure:
+```python
+while True:
+    data = conn.recv(BUFFER_SIZE)
+    if not data:
+        break
+    message = data.decode()
+```
+This works because:
+- `recv()` blocks until data arrives
+- An empty return (`not data`) signals connection closure
+- Messages are received in the exact order they were sent
+
+4. Connection Cleanup:
+   - The socket file is removed before and after use
+   - The server closes the connection when the client disconnects
+   - Both sockets are properly closed
+
+The implementation uses a sleep call (`time.sleep(1)`) to ensure the receiver is ready before the sender starts, which is a simple but effective way to handle initialization ordering in this example.
