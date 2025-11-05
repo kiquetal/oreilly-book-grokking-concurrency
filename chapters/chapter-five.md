@@ -205,3 +205,13 @@ For more robust applications, you might want to:
 - Implement explicit shutdown methods
 
 The current implementation is sufficient for simple task processing where clean worker shutdown isn't critical.
+
+
+#### Recap 
+
+Each type of IPC has its own use cases:
+
+- Shared Memory: Fast communication for related tasks, but requires synchronization.
+- Pipes: Simple unidirectional communication, suitable for parent-child processes.
+- Message Queues: Decoupled communication, useful for distributed systems.
+- Sockets: Flexible communication for local and networked processes, with reliable delivery.
