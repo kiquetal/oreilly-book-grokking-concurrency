@@ -207,11 +207,70 @@ For more robust applications, you might want to:
 The current implementation is sufficient for simple task processing where clean worker shutdown isn't critical.
 
 
-#### Recap 
+##### Message Queue Implementation Details
 
-Each type of IPC has its own use cases:
+The `message_queue.py` example demonstrates a thread-safe producer-consumer pattern using Python's `queue.Queue`. This implementation shows how message queues enable safe communication between threads.
 
-- Shared Memory: Fast communication for related tasks, but requires synchronization.
-- Pipes: Simple unidirectional communication, suitable for parent-child processes.
-- Message Queues: Decoupled communication, useful for distributed systems.
-- Sockets: Flexible communication for local and networked processes, with reliable delivery.
+###### Key Components:
+
+1. Queue Creation and Management:
+```python
+message_queue = queue.Queue()  # Thread-safe FIFO queue
+```
+- Queue is created at module level, shared between threads
+- Internally synchronized - no additional locks needed
+- FIFO (First In, First Out) ordering of messages
+
+2. Producer Implementation:
+```python
+def run(self) -> None:
+    for msg in self.messages:
+        message_queue.put(msg)
+    message_queue.put(None)  # Sentinel
+```
+- Sends messages sequentially
+- Uses `put()` to add messages to queue
+- Sends `None` as sentinel to signal completion
+
+3. Consumer Implementation:
+```python
+def run(self) -> None:
+    while True:
+        message = message_queue.get()  # Blocks until message available
+        if message is None:
+            message_queue.task_done()
+            break
+        # Process message
+        message_queue.task_done()
+```
+
+###### Why This Works:
+
+1. Thread Safety:
+   - Queue handles all synchronization internally
+   - No race conditions possible
+   - Safe for multiple producers/consumers
+
+2. Flow Control:
+   - `get()` blocks when queue is empty
+   - `put()` blocks if queue has size limit
+   - Natural throttling of fast producers
+
+3. Completion Handling:
+   - Sentinel value (`None`) signals end
+   - `task_done()` tracks processed messages
+   - `join()` waits for all messages to be processed
+
+4. Sequence of Events:
+   ```python
+   consumer.start()   # Start waiting for messages
+   producer.start()   # Begin sending messages
+   producer.join()    # Wait for producer to finish
+   message_queue.join() # Wait for all messages to be processed
+   ```
+
+This implementation demonstrates several advantages of message queues:
+- Decoupling: Producer and consumer don't need to know about each other
+- Buffering: Queue handles temporary differences in processing speeds
+- Synchronization: Built-in thread safety
+- Flow control: Natural backpressure handling
