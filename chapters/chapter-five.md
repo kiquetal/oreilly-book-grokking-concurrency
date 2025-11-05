@@ -156,3 +156,4 @@ This is why the code doesn't need explicit message counting or a special "end" m
 #### Thread Pool Patterns
 
 Reusing threads with a thread pool eliminates the overhead associated with creating new threads and protects against the unexpected failure of the taks, such as an unhandled exception, from terminating the entire program.
+
