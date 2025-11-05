@@ -45,13 +45,13 @@ def cpu_waster(i: int) -> None:
     name = current_thread().name
     print(f"Task {i} started by {name}\n")
     time.sleep(2)
-    print(f"Task {i} completed by {name}\n")
+    print(f"[Task {i} completed by =>{name}]\n")
 
 def main() -> None:
     num_threads = 10
     pool = ThreadPool(num_threads=num_threads)
 
-    for i in range(num_threads):
+    for i in range(num_threads + 5):
         pool.submit(cpu_waster, i)
     print("All tasks submitted.\n")
     pool.wait_completion()
