@@ -157,3 +157,51 @@ This is why the code doesn't need explicit message counting or a special "end" m
 
 Reusing threads with a thread pool eliminates the overhead associated with creating new threads and protects against the unexpected failure of the taks, such as an unhandled exception, from terminating the entire program.
 
+##### Thread Pool Worker Loop Behavior
+
+In the `pool.py` implementation, we have a unique situation with the worker thread loop:
+
+```python
+def run(self) -> None:
+    while True:
+        task: Task = self.task_queue.get()
+        try:
+            func, args, kwargs = task
+            func(*args, **kwargs)
+        finally:
+            self.task_queue.task_done()
+```
+
+The worker loop continues indefinitely because:
+
+1. Workers are daemon threads (`worker.daemon = True` in ThreadPool initialization)
+   - Daemon threads are automatically terminated when the main program exits
+   - They don't need explicit shutdown signals
+
+2. Queue synchronization:
+   - `task_queue.get()` blocks until a task is available
+   - `task_queue.task_done()` decrements internal counter for `join()`
+   - When main thread calls `wait_completion()`, it waits on `task_queue.join()`
+   - `join()` blocks until every `put()` item has a matching `task_done()`
+
+3. Program termination sequence:
+   - Main thread submits all tasks
+   - Calls `wait_completion()` which waits for all tasks to complete
+   - When main thread exits, daemon workers are automatically terminated
+
+This design trades off clean shutdown for simplicity:
+- No need for explicit shutdown signals
+- Workers don't need to check for termination conditions
+- Program exits cleanly when work is done due to daemon threads
+
+However, this approach has limitations:
+- Workers can't clean up resources before termination
+- No graceful shutdown mechanism
+- Relies on Python's daemon thread behavior
+
+For more robust applications, you might want to:
+- Use non-daemon threads
+- Add a sentinel value (like None) to signal shutdown
+- Implement explicit shutdown methods
+
+The current implementation is sufficient for simple task processing where clean worker shutdown isn't critical.
