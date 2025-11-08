@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/codes/chapter5/message_queue.py">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/codes/chapter5/message_queue.py" />
+              <option name="updatedContent" value="import queue&#10;import threading&#10;import time&#10;from typing import List&#10;&#10;# A thread-safe message queue&#10;message_queue = queue.Queue()&#10;&#10;class Producer(threading.Thread):&#10;    def __init__(self, messages: List[str]) -&gt; None:&#10;        super().__init__()&#10;        self.messages = messages&#10;        self.name = &quot;Producer&quot;&#10;&#10;    def run(self) -&gt; None:&#10;        for msg in self.messages:&#10;            print(f&quot;{threading.current_thread().name}: Sending message: {msg}&quot;)&#10;            message_queue.put(msg)&#10;            time.sleep(1)  # Simulate some processing time&#10;        # Send sentinel to signal end of messages&#10;        message_queue.put(None)&#10;&#10;class Consumer(threading.Thread):&#10;    def __init__(self) -&gt; None:&#10;        super().__init__()&#10;        self.name = &quot;Consumer&quot;&#10;&#10;    def run(self) -&gt; None:&#10;        while True:&#10;            # Block until a message is available&#10;            message = message_queue.get()&#10;            &#10;            # Check for sentinel value&#10;            if message is None:&#10;                print(f&quot;{threading.current_thread().name}: No more messages.&quot;)&#10;                message_queue.task_done()&#10;                break&#10;                &#10;            print(f&quot;{threading.current_thread().name}: Received message: {message}&quot;)&#10;            # Mark the message as processed&#10;            message_queue.task_done()&#10;            time.sleep(0.5)  # Simulate message processing&#10;&#10;def main() -&gt; None:&#10;    # Messages to be sent&#10;    messages = [&#10;        &quot;Hello from the queue!&quot;,&#10;        &quot;Processing message 1&quot;,&#10;        &quot;Processing message 2&quot;,&#10;        &quot;Final message&quot;&#10;    ]&#10;&#10;    # Create producer and consumer threads&#10;    producer = Producer(messages)&#10;    consumer = Consumer()&#10;&#10;    # Start threads&#10;    consumer.start()  # Start consumer first to wait for messages&#10;    time.sleep(0.1)  # Small delay to ensure consumer is ready&#10;    producer.start()&#10;&#10;    # Wait for producer to finish sending&#10;    producer.join()&#10;    &#10;    # Wait for all messages to be processed&#10;    message_queue.join()&#10;    &#10;    # Wait for consumer to finish&#10;    consumer.join()&#10;&#10;    print(&quot;All messages have been processed!&quot;)&#10;&#10;if __name__ == &quot;__main__&quot;:&#10;    main()" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

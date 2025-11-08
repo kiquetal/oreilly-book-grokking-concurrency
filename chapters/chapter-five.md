@@ -36,16 +36,79 @@ which means that the first data written to the pipe is the first data read from 
  Named pipes are created using the mkfifo() system call and can be used by unrelated tasks.
  Named pipes persist after the tasks finish using them until they are deleted.
 
+###### Understanding Pipes: How the Implementation Works
+
+The implementation in `pipes.py` demonstrates thread communication using Python's `multiprocessing.Pipe()`. Here's why it works:
+
+**1. Pipe Creation - Two Endpoints:**
+```python
+read_conn, write_conn = Pipe()
+```
+When you call `Pipe()`, you get two connection objects:
+- `write_conn` - the write end (data goes IN here)
+- `read_conn` - the read end (data comes OUT here)
+
+Think of it like a physical pipe: one end for input, one end for output.
+
+**2. Unidirectional Data Flow:**
+```python
+# Writer thread (pipes.py:13)
+self.conn.send("Rubber duck")
+
+# Reader thread (pipes.py:24)
+data = self.conn.recv()
+```
+Data flows in ONE direction only:
+- Writer uses its connection (`write_conn`) to send data
+- Reader uses its connection (`read_conn`) to receive data
+- The write end cannot receive; the read end cannot send
+
+**3. Blocking Behavior - The Key Concept:**
+
+Reading from a pipe is a **blocking operation**. When the Reader thread calls `self.conn.recv()` at line 24:
+- It **pauses execution** and waits
+- The thread stays blocked until data arrives
+- Only when Writer calls `self.conn.send()` does the Reader unblock
+- This automatic synchronization prevents race conditions
+
+**4. Why This Code Works:**
+
+```python
+reader = Reader(read_conn)  # Gets the read end
+writer = Writer(write_conn) # Gets the write end
+
+for thread in threads:
+    thread.start()  # Both start running
+```
+
+The execution flow:
+1. Both threads start concurrently
+2. Reader immediately calls `recv()` and blocks (waits)
+3. Writer calls `send("Rubber duck")`
+4. The OS delivers the data through the pipe
+5. Reader unblocks, receives "Rubber duck", and prints it
+6. Both threads complete
+
+**Key Advantages:**
+- **No race conditions**: The blocking behavior automatically synchronizes threads
+- **No explicit locks needed**: The pipe handles synchronization
+- **OS-managed**: The operating system ensures reliable data transfer
+- **Simple API**: Just `send()` and `recv()`
+
+**Real-World Analogy:**
+Imagine a pneumatic tube system in a bank drive-through:
+- Customer puts item in tube (write end) → `send()`
+- Tube travels to teller (pipe)
+- Teller waits at their end (read end) → `recv()` blocks
+- Item arrives, teller retrieves it → `recv()` returns
+
+If you need **bidirectional** communication (both sides sending and receiving), you must create **two pipes** - one for each direction.
 
 ##### Message Queues
 
 As we've seen, messages queues are used to implement loosely coupled
 systems. They are used everywhere.In OSS to schedule processes and in
 routers as buffers to store packet before they are processed.
-
-
-
-Reading from a pipe is a blocking operation. If a process attempts to read from an empty pipe, it will pause until data becomes available. In the provided `pipes.py` example, the `Reader` thread calls `self.conn.recv()`, which blocks execution until the `Writer` thread sends data using `self.conn.send()`.
 
 ##### Unix Domain Sockets - Stream Communication
 
