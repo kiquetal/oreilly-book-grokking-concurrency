@@ -104,6 +104,112 @@ Imagine a pneumatic tube system in a bank drive-through:
 
 If you need **bidirectional** communication (both sides sending and receiving), you must create **two pipes** - one for each direction.
 
+###### Bidirectional Communication with Two Pipes
+
+Since pipes are unidirectional, bidirectional communication requires **two separate pipes** - one for each direction:
+
+```python
+from multiprocessing import Pipe
+from threading import Thread
+
+class Node(Thread):
+    def __init__(self, name, send_conn, recv_conn):
+        super().__init__()
+        self.name = name
+        self.send_conn = send_conn  # Connection for sending
+        self.recv_conn = recv_conn  # Connection for receiving
+
+    def run(self):
+        # Send a message
+        message = f"Hello from {self.name}"
+        print(f"{self.name}: Sending '{message}'")
+        self.send_conn.send(message)
+
+        # Receive a reply
+        reply = self.recv_conn.recv()
+        print(f"{self.name}: Received '{reply}'")
+
+def main():
+    # Create two pipes: one for each direction
+    pipe_a_to_b = Pipe()  # Node A sends, Node B receives
+    pipe_b_to_a = Pipe()  # Node B sends, Node A receives
+
+    # Node A: sends through pipe_a_to_b[1], receives through pipe_b_to_a[0]
+    node_a = Node("Node-A",
+                  send_conn=pipe_a_to_b[1],  # Write end of A→B pipe
+                  recv_conn=pipe_b_to_a[0])  # Read end of B→A pipe
+
+    # Node B: sends through pipe_b_to_a[1], receives through pipe_a_to_b[0]
+    node_b = Node("Node-B",
+                  send_conn=pipe_b_to_a[1],  # Write end of B→A pipe
+                  recv_conn=pipe_a_to_b[0])  # Read end of A→B pipe
+
+    node_a.start()
+    node_b.start()
+
+    node_a.join()
+    node_b.join()
+
+if __name__ == "__main__":
+    main()
+```
+
+**How It Works:**
+
+1. **Two Pipes Created:**
+   - `pipe_a_to_b`: For Node A → Node B communication
+   - `pipe_b_to_a`: For Node B → Node A communication
+
+2. **Connection Assignment:**
+   - Node A gets: write end of pipe_a_to_b + read end of pipe_b_to_a
+   - Node B gets: write end of pipe_b_to_a + read end of pipe_a_to_b
+
+3. **Bidirectional Flow:**
+   ```
+   ┌─────────┐                           ┌─────────┐
+   │ Node A  │                           │ Node B  │
+   └─────────┘                           └─────────┘
+        │                                     │
+        │ send("Hello from Node-A")           │
+        ├──────[pipe_a_to_b[1]]──────────────>│ recv()
+        │                                     │
+        │                                     │ send("Hello from Node-B")
+        │ recv()       <──────────────────────┤[pipe_b_to_a[1]]
+        │                [pipe_b_to_a[0]]     │
+        │                                     │
+        ▼                                     ▼
+
+   Two separate pipes enable bidirectional communication:
+   • pipe_a_to_b: Node A writes [1], Node B reads [0]
+   • pipe_b_to_a: Node B writes [1], Node A reads [0]
+   ```
+
+4. **Execution:**
+   - Both nodes send their message through their send_conn
+   - Both nodes receive a message through their recv_conn
+   - Each node can both send AND receive (bidirectional)
+
+**Key Points:**
+- Each pipe still handles unidirectional flow
+- Two pipes together create bidirectional communication
+- Each node has one connection for sending, one for receiving
+- The OS manages synchronization for both pipes independently
+
+**Alternative: Duplex Pipe**
+
+Python's `Pipe()` actually supports a `duplex=True` parameter (default) that creates a bidirectional pipe:
+
+```python
+# Single duplex pipe - both ends can send and receive
+conn1, conn2 = Pipe(duplex=True)
+
+# Now conn1 and conn2 can both send() and recv()
+node_a = Node("Node-A", send_conn=conn1, recv_conn=conn1)  # Same connection
+node_b = Node("Node-B", send_conn=conn2, recv_conn=conn2)  # Same connection
+```
+
+However, using **two unidirectional pipes** is often clearer conceptually and matches the traditional Unix pipe model more closely.
+
 ##### Message Queues
 
 As we've seen, messages queues are used to implement loosely coupled
